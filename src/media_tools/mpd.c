@@ -28,6 +28,7 @@
 #include <gpac/internal/m3u8.h>
 #include <gpac/network.h>
 #include <gpac/maths.h>
+#include <gpac/tools.h>
 
 #ifndef GPAC_DISABLE_MPD
 
@@ -3487,7 +3488,12 @@ static GF_Err mpd_write_generation_comment(GF_MPD const * const mpd, FILE *out)
 	gtime = sec;
 	t = gf_gmtime(&gtime);
 	if (! gf_sys_is_test_mode() ){
-		gf_fprintf(out, "<!-- MPD file Generated with GPAC version %s at %d-%02d-%02dT%02d:%02d:%02d.%03dZ -->\n", gf_gpac_version(), 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (u32)time_ms);
+		const char *pi_str = gf_opts_get_key("core", "pi");
+		if (pi_str && pi_str[0]) {
+			gf_fprintf(out, "<!-- %s -->\n", pi_str);
+		} else {
+			gf_fprintf(out, "<!-- MPD file Generated with GPAC version %s at %d-%02d-%02dT%02d:%02d:%02d.%03dZ -->\n", gf_gpac_version(), 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (u32)time_ms);
+		}
 	}
 	if (!mpd->write_context) {
 		GF_LOG(GF_LOG_INFO, GF_LOG_DASH, ("[MPD] Generating MPD at time %d-%02d-%02dT%02d:%02d:%02d.%03dZ\n", 1900 + t->tm_year, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, (u32)time_ms));
@@ -4076,6 +4082,11 @@ GF_Err gf_mpd_write_m3u8_master_playlist(GF_MPD const * const mpd, FILE *out, co
 	if (mode!=GF_M3U8_WRITE_CHILD) {
 
 		gf_fprintf(out, "#EXTM3U\n");
+		const char *pi_value = gf_opts_get_key("core", "pi");
+		if (pi_value && pi_value[0]) {
+			gf_fprintf(out, "## %s\n", pi_value);
+		}
+		gf_fprintf(out, "\n");
 		gf_fprintf(out, "#EXT-X-VERSION:%d\n", hls_version);
 		if (use_ind_segments)
 			gf_fprintf(out, "#EXT-X-INDEPENDENT-SEGMENTS\n");
@@ -4425,7 +4436,7 @@ GF_Err gf_mpd_write(GF_MPD const * const mpd, FILE *out, Bool compact)
 
 	gf_mpd_print_base_urls(out, mpd->base_URLs, indent+1);
 
-	gf_mpd_lf(out, indent);
+		gf_mpd_lf(out, indent);
 
 	i=0;
 	while ((text = (char *)gf_list_enum(mpd->locations, &i))) {
