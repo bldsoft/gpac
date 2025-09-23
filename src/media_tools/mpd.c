@@ -4437,6 +4437,7 @@ GF_Err gf_mpd_write(GF_MPD const * const mpd, FILE *out, Bool compact)
 */
 	gf_mpd_print_base_urls(out, mpd->base_URLs, indent+1);
 
+	if (gf_list_count(mpd->base_URLs))
 		gf_mpd_lf(out, indent);
 
 	i=0;
