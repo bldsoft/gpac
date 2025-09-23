@@ -4396,6 +4396,7 @@ GF_Err gf_mpd_write(GF_MPD const * const mpd, FILE *out, Bool compact)
 
 	child_idx = 0;
 	i=0;
+/*
 	while ((info = (GF_MPD_ProgramInfo *)gf_list_enum(mpd->program_infos, &i))) {
 		u32 sub_child_idx=0;
 		gf_mpd_extensible_print_nodes(out, mpd->x_children, indent, &child_idx, GF_FALSE);
@@ -4433,7 +4434,7 @@ GF_Err gf_mpd_write(GF_MPD const * const mpd, FILE *out, Bool compact)
 		gf_fprintf(out, "</ProgramInformation>");
 		gf_mpd_lf(out, indent);
 	}
-
+*/
 	gf_mpd_print_base_urls(out, mpd->base_URLs, indent+1);
 
 		gf_mpd_lf(out, indent);
